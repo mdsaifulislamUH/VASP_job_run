@@ -68,4 +68,111 @@ python encut_convergence.py
 After all jobs finish, extract the total energies from each vasp.out or OUTCAR file and plot energy vs ENCUT.
 The optimal ENCUT is the point beyond which the energy no longer changes significantly (i.e., it converges).
 
+🔋 Energy Calculation Process
+To determine the optimal ENCUT value, we calculate the total energy of the structure at various ENCUT values and analyze how the energy changes. 
+Once the energy becomes stable (i.e., no longer changes significantly with increasing ENCUT), we consider that value to be converged.
+
+Below is a Python script that automates energy extraction from vasp.out files generated at different ENCUT values:
+
+import os
+
+# Base directory containing ENCUT folders (replace with your actual path)
+base_dir = "/path/to/ENCUT"  # e.g., "./ENCUT"
+
+# Name of the file from which energy will be extracted
+target_file = "vasp.out"
+
+# Output file to save the extracted energies
+output_file = os.path.join(base_dir, "total_energy")
+
+# Open the output file for writing
+with open(output_file, 'w') as output:
+    output.write("ENCUT    E0 (eV)\n")  # Header line
+
+    # Loop through all directories in the base folder
+    for root, dirs, files in os.walk(base_dir):
+        if target_file in files:
+            # Extract ENCUT value from the directory name
+            encut = os.path.basename(root)
+            if not encut.isdigit():
+                continue  # Skip non-ENCUT directories
+
+            file_path = os.path.join(root, target_file)
+            try:
+                with open(file_path, 'r') as file:
+                    for line in file:
+                        if "E0=" in line:
+                            items = line.split()
+                            e0_value = float(items[4])  # E0 is usually at index 4
+                            output.write(f"{encut}    {e0_value:.6f}\n")
+                            print(f"ENCUT: {encut}  E0: {e0_value:.6f}")
+                            break  # Only need the first matching line
+            except Exception as e:
+                print(f"Error reading {file_path}: {e}")
+
+🔍 What This Script Does
+Walks through each ENCUT directory (e.g., 500, 520, 540, ...).
+
+Searches for vasp.out and extracts the line containing E0=.
+
+Retrieves the total energy and writes it to total_energy with the corresponding ENCUT.
+
+Skips directories with non-numeric names.
+
+Prints extracted data to the terminal for live feedback.
+
+✅ What You Need To Do
+Replace "/path/to/ENCUT" with the actual path to your ENCUT test folders.
+
+Ensure each subdirectory is named numerically (e.g., 500, 520, ...).
+
+Confirm that vasp.out contains a line like E0= ... and that the energy is at index 4 (5th column).
+
+
+📈 Plotting ENCUT vs Total Energy to Determine Convergence
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Replace these with your actual data
+encut_values = [160, 180, 200, 220, 240, 260, 280, 300, 320, 340, 360, 380, 400, 420,
+                440, 460, 480, 500, 520, 540, 560, 580, 600, 620, 640, 660, 680, 700,
+                720, 740, 760, 780, 800]
+
+total_energies = [...]  # Your total energies corresponding to ENCUT values
+
+# Final converged energy (last value in your list)
+E_final = total_energies[-1]
+
+# Plot ENCUT vs Total Energy
+plt.figure(figsize=(8, 6))
+plt.plot(encut_values, total_energies, marker='o', color='green', label='Total Energy')
+
+# Highlight converged energy line and ±1 meV range
+plt.axhline(y=E_final, color='red', linestyle='-', label='Final Energy')
+plt.axhline(y=E_final + 0.001, linestyle='dotted', color='blue', label='+1 meV')
+plt.axhline(y=E_final - 0.001, linestyle='dotted', color='gray', label='-1 meV')
+
+# Labels and layout
+plt.xlabel("Kinetic Energy Cutoff (ENCUT, eV)", fontsize=12)
+plt.ylabel("Total Energy (eV)", fontsize=12)
+plt.title("Total Energy vs ENCUT", fontsize=14)
+plt.grid(True, linestyle='--')
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+
+✅ How to Use This Plot
+Goal: Find the ENCUT value at which the energy becomes stable (converges).
+
+The red line marks the final converged energy.
+
+The blue and gray dotted lines define a ±1 meV threshold range.
+
+When your total energies fall within this narrow band, you can consider your ENCUT to be sufficiently converged.
+
+
+
+
 
