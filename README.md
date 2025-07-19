@@ -1,4 +1,4 @@
-# VASP_job_template
+# VASP_job_run
 🚀 How to Use This Template
 This template provides a standard setup to run VASP jobs using SLURM.
 
