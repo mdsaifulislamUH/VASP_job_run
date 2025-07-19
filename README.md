@@ -48,7 +48,11 @@ Set the correct partition (--partition)
 Load the appropriate VASP module (module load vasp/…)
 Details about the job script (job.sh) will be explained in a separate section.
 3️⃣ Submit the Job
+
 Use the sbatch command to submit the job to the SLURM scheduler:
+
 you write as below:
+
 sbatch job.sh
+
 Once submitted, SLURM will queue your job, and output files (OUTCAR, vasp_output.log, etc.) will be generated after execution.
