@@ -1,6 +1,11 @@
-To determine the appropriate `ENCUT` value for your specific structure, you should perform a convergence test by running calculations with a range of `ENCUT` values. 
-The correct `ENCUT` is the point at which the total energy becomes stable—meaning it no longer changes significantly with increasing `ENCUT`.
-So, for determining ENCUT value, you can use below script: 
+🔍 ENCUT Convergence Test
+
+To determine the appropriate ENCUT value for your specific structure, you should perform a convergence test by running calculations with a range of ENCUT values.
+The correct ENCUT is the point at which the total energy becomes stable—meaning it no longer changes significantly with increasing ENCUT.
+
+You can use the following Python script to automate this process. It sets up and submits VASP jobs for multiple ENCUT values:
+
+🐍 encut_convergence.py
 
 import os
 
@@ -48,6 +53,19 @@ mpirun -n 1 $VASPCPUDIR/vasp_std | tee vasp.out
     # Submit the job
     os.system("sbatch job.sh")
 
-    # Go back to parent directory
+    # Return to the parent directory
     os.chdir("..")
+
+▶️ How to Run
+Save the script above as encut_convergence.py.
+
+Make sure POSCAR, POTCAR, and KPOINTS are present in the same directory.
+
+Run the script:
+python encut_convergence.py
+
+📊 Analyze Results
+After all jobs finish, extract the total energies from each vasp.out or OUTCAR file and plot energy vs ENCUT.
+The optimal ENCUT is the point beyond which the energy no longer changes significantly (i.e., it converges).
+
 
