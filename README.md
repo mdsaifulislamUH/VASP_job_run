@@ -3,7 +3,9 @@
 This template provides a standard setup to run VASP jobs using SLURM.
 
 1️⃣ Prepare Input Files
+
 Place the following files in the same directory:
+
 INCAR, POSCAR, POTCAR and KPOINTS
 > **Please keep the file names exactly as written: `INCAR`, `POSCAR`, `POTCAR`, `KPOINTS`, and `job.sh`. Do not use lowercase letters, additional characters, or numbers in the file names.**
  
