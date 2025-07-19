@@ -1,0 +1,53 @@
+To determine the appropriate `ENCUT` value for your specific structure, you should perform a convergence test by running calculations with a range of `ENCUT` values. 
+The correct `ENCUT` is the point at which the total energy becomes stable—meaning it no longer changes significantly with increasing `ENCUT`.
+So, for determining ENCUT value, you can use below script: 
+
+import os
+
+# Define ENCUT range for convergence testing
+ENCUT_START = 500
+ENCUT_END = 810
+ENCUT_INCREMENT = 20
+
+# Loop over ENCUT values
+for ENCUT in range(ENCUT_START, ENCUT_END, ENCUT_INCREMENT):
+    dir_name = f"{ENCUT}"
+    os.makedirs(dir_name, exist_ok=True)
+    os.chdir(dir_name)
+
+    # Copy standard VASP input files into this directory
+    os.system("cp ../POSCAR ../POTCAR ../KPOINTS .")
+
+    # Create INCAR with dynamic ENCUT value
+    with open("INCAR", "w") as file:
+        file.write("SYSTEM = Ag_Se_C_H\n")
+        file.write("ISTART = 0\n")
+        file.write("ICHARG = 2\n")
+        file.write("ISMEAR = 0\n")
+        file.write("SIGMA = 0.1\n")
+        file.write(f"ENCUT = {ENCUT}\n")
+
+    # Generate SLURM job script
+    with open("job.sh", "w") as file:
+        file.write(f"""#!/bin/bash
+#SBATCH -J encut_{ENCUT}
+#SBATCH -o encut_{ENCUT}.out
+#SBATCH --mail-user=mislam35@cougarnet.uh.edu
+#SBATCH --mail-type=END
+#SBATCH --ntasks-per-node=1
+#SBATCH -N 1
+#SBATCH -t 01:00:00
+#SBATCH --mem-per-cpu=2GB
+
+# Load VASP module if needed, e.g.:
+# module load vasp
+
+mpirun -n 1 $VASPCPUDIR/vasp_std | tee vasp.out
+""")
+
+    # Submit the job
+    os.system("sbatch job.sh")
+
+    # Go back to parent directory
+    os.chdir("..")
+
