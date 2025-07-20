@@ -110,6 +110,10 @@ with open(output_file, 'w') as output:
             except Exception as e:
                 print(f"Error reading {file_path}: {e}")
 
+saved this scripts as energy_encut.py and run the script as 
+
+python energy_encut.py
+
 🔍 What This Script Does
 Walks through each ENCUT directory (e.g., 500, 520, 540, ...).
 
@@ -161,6 +165,10 @@ plt.grid(True, linestyle='--')
 plt.legend()
 plt.tight_layout()
 plt.show()
+
+saved the scripts as plot_encut.py and run as 
+
+python plot_encut.py
 
 
 ✅ How to Use This Plot
