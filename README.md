@@ -1,61 +1,72 @@
-# VASP_job_run
+📦 VASP Job Run
+
+This repository provides a clean and standardized template to run VASP jobs using the SLURM scheduler on HPC systems.
+
 🚀 How to Use This Template
-This template provides a standard setup to run VASP jobs using SLURM.
 
 1️⃣ Prepare Input Files
+Place the following required input files in your working directory:
 
-Place the following files in the same directory:
+INCAR – VASP simulation parameters
 
-INCAR, POSCAR, POTCAR and KPOINTS
-> **Please keep the file names exactly as written: `INCAR`, `POSCAR`, `POTCAR`, `KPOINTS`, and `job.sh`. Do not use lowercase letters, additional characters, or numbers in the file names.**
- 
+POSCAR – Crystal structure information
 
-INCAR – Contains VASP simulation parameters.
-You can find a full list of available INCAR tags and descriptions on the VASP Wiki.
+POTCAR – Pseudopotentials (combine all required elements using cat)
 
-For geometry optimization, it's important to include:
+KPOINTS – K-point mesh for Brillouin zone sampling
 
-IBRION – Algorithm for ionic relaxation.
-Recommended values:
+job.sh – SLURM job submission script
 
-IBRION = 1: Quasi-Newton algorithm
+⚠️ Important:
+Do not rename the files or use lowercase/extra characters. Keep the filenames exactly as above.
 
-IBRION = 2: Conjugate gradient (⚠️ often gives stable results)
+📘 INCAR Guidelines
 
-IBRION = 3: Damped molecular dynamics
+You can explore all available INCAR tags on the VASP Wiki.
+For geometry optimization, include:
 
-In my case, using IBRION = 2 yields reliable and consistent results.
+IBRION – Controls ionic relaxation:
 
-ISIF – Specifies what is allowed to relax:
+IBRION = 1 → Quasi-Newton
 
-ISIF = 2: Only atom positions relax (cell shape and volume fixed)
+IBRION = 2 → Conjugate gradient (recommended)
 
-ISIF = 3: Atom positions + cell shape + volume relax
+IBRION = 3 → Damped molecular dynamics
 
-You need to specify an appropriate ENCUT value for your structure. How to determine the correct ENCUT for each system will be explained in a separate section. 
+ISIF – Specifies what can relax:
 
-POSCAR – Contains crystal structure information.
+ISIF = 2 → Only atomic positions
 
-POTCAR – Contains pseudopotentials (combine POTCARs for all atoms using cat).
+ISIF = 3 → Positions, cell shape, and volume
 
-KPOINTS – Contains the k-point sampling grid.
+ENCUT – Energy cutoff
+A system-specific value that you must determine separately. (Instructions to be added in a future section.)
 
-2️⃣ Configure the Job Script
-Edit job.sh as needed to match your HPC environment:
-you need to specify your each section as your HPC requirements. 
-Update the number of nodes and tasks (--nodes, --ntasks)
+2️⃣ Configure the SLURM Job Script
 
-Set the correct partition (--partition)
+Edit job.sh to match your HPC environment:
 
-Load the appropriate VASP module (module load vasp/…)
-Details about the job script (job.sh) will be explained in a separate section.
+Update:
+
+--nodes, --ntasks, --mem, --time, and --partition
+
+Load the correct VASP module:
+
+
+module load vasp/<version>
+
+Set your email for job notifications
+
+🧠 A full explanation of job.sh is included here.
 
 3️⃣ Submit the Job
 
-Use the sbatch command to submit the job to the SLURM scheduler:
-
-you write as below:
+Use the following command to submit the job to SLURM:
 
 sbatch job.sh
 
-Once submitted, SLURM will queue your job, and output files (OUTCAR, vasp_output.log, etc.) will be generated after execution.
+SLURM will queue the job, and once completed, you'll receive output files such as:
+
+OUTCAR – Main output file
+
+vasp.out – Terminal output
